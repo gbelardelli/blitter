@@ -9,6 +9,7 @@
 ; DEFINITIONS
 ;********************************************************
     XDEF        WaitBlitter
+    XDEF        MemClear
 
     SECTION     code_section,CODE
 
@@ -27,12 +28,20 @@ WaitBlitter:
     rts
 
 ;********************************************************
-; a1 -> src
-; a2 -> dest
-; d1 -> x src
-; d2 -> y src
-; d3 ->
+; MemClear - Simple memory clear
+; a1 -> dest
+; d1 -> size in words (max 64)
 ;********************************************************
-CopyAD:
+MemClear:
+    bsr.s   WaitBlitter
 
-    move.w  #(ABC|ABNC|ANBC|ANBNC|SRCA|DEST),BLTCON0(a5)
+    move.w  #DEST,BLTCON0(a5)   ; Enable only DEST DMA
+                                ; MINTERMS = $0 -> D
+    move.w  #0,BLTDMOD          ; Modulo 0
+    move.w  #0,BLTCON1          ; BLTCON1 = 0
+    move.l  a1,BLTDPT(a5)       ; Dest address
+    move.w  d1,BLTSIZE(a5)      ; Size in words
+
+    bsr.s   WaitBlitter
+
+    rts

@@ -37,14 +37,18 @@ sys_copper:
 ;********************************************************
 TakeSystem:
     move.l      $4.w,a6                 ; ExecBase
-    lea         gfx_name,a1
-    jsr         _LVOOpenLibrary(a6)     ; Open graphic library
-    move.l      d0,gfx_base
-    move.l      $26(a0),sys_copper      ; Save system copperlist
-
-    ;jsr         _LVOOwnBlitter(a0)      ; Take Blitter ownership
     jsr         _LVOForbid(a6)          ; Disable multitasking
     jsr         _LVODisable(a6)         ; Disable interrupts
+
+    lea         gfx_name,a1
+    jsr         _LVOOldOpenLibrary(a6)  ; Open graphic library
+    move.l      d0,gfx_base
+
+    move.l      d0,a6
+    move.l      $26(a6),sys_copper      ; Save system copperlist
+
+    jsr        _LVOOwnBlitter(a6)
+
     lea         CUSTOM,a5               ; Chip custom base address $DFF000
 
     move.w      DMACONR(a5),old_dma     ; Save DMA status
@@ -52,6 +56,7 @@ TakeSystem:
     move.w      #DMASET,DMACON(a5)      ; Enable DMA
 
     move.l      #copper_list,COP1LC(a5) ; Copper list address
+    jsr         WaitVBL                 ; Prevent screen flashing
     move.w      d0,COPJMP1(a5)          ; Start Copper
 
     ; Disable AGA features
@@ -69,8 +74,8 @@ ReleaseSystem:
     or.w        #$8000,old_dma          ; Set bit 15
     move.w      old_dma,DMACON(a5)      ; Set DMA old value
 
-    ;move.l      gfx_base,a6
-    ;jsr         _LVODisownBlitter(a6)   ; Release Blitter
+    move.l      gfx_base,a6
+    jsr         _LVODisownBlitter(a6)   ; Release Blitter
 
     move.l      $4.w,a6                 ; ExecBase
     jsr         _LVOPermit(a6)          ; Enable multitasking

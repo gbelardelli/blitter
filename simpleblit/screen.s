@@ -9,6 +9,8 @@
 ; DEFINITIONS
 ;********************************************************
     XDEF    InitBPLPointers
+    XDEF    WaitVBL
+    XDEF    WaitVLine
     XDEF    screen
 
     SECTION code_section,CODE
@@ -37,6 +39,37 @@ InitBPLPointers:
     movem.l     (sp)+,d0-d1/d7/a1     ; Reset regs from stack
     rts
 
+;********************************************************
+; WaitVLine - Wait specific raster line
+; Params:
+;   d2.l - Raster line
+;********************************************************
+WaitVLine:
+    movem.l     d0-d2,-(sp)     ; Save regs on stack
+
+    lsl.l       #8,d2
+    move.l      #$1FF00,d1      ; Mask bit 8-16
+.wait:
+    move.l      VPOSR(a5),d0
+    and.l       d1,d0
+    cmp.l       d2,d0
+    bne.s       .wait
+
+    movem.l     (sp)+,d0-d2     ; Reset regs from stack
+    rts
+
+
+;********************************************************
+; Wait vertical blank
+;********************************************************
+WaitVBL:
+    movem.l     d2,-(sp)     ; Save regs on stack
+
+    move.l      #304,d2
+    bsr         WaitVLine
+
+    movem.l     (sp)+,d2     ; Reset regs from stack
+    rts
 
 ;********************************************************
 ; BSS DATA
