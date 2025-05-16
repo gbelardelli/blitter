@@ -1,0 +1,51 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "amiga-assembly",
+            "request": "launch",
+            "name": "WinUAE Amiga500 Debug",
+            "stopOnEntry": false,
+            "program": "${workspaceFolder}/uae/dh0/main",
+            "remoteProgram": "SYS:main",
+            "emulatorType": "winuae",
+            "emulatorArgs": [
+                "-f",
+                "${env:WINUAE_ROOT_PATH}/Configurations/Amiga500 1.3 dev.uae",
+                "-s",
+                "filesystem=rw,dh0:${workspaceFolder}/uae/dh0"
+            ],
+            "preLaunchTask": "amigaassembly: build"
+        },
+        {
+            "type": "amiga-assembly",
+            "request": "launch",
+            "name": "WinUAE Amiga1200 Debug",
+            "stopOnEntry": false,
+            "program": "${workspaceFolder}/uae/dh0/main",
+            "remoteProgram": "SYS:main",
+            "emulatorType": "winuae",
+            "emulatorArgs": [
+                "-f",
+                "${env:WINUAE_ROOT_PATH}/Configurations/Amiga1200 3.1 dev.uae",
+                "-s",
+                "filesystem=rw,dh0:${workspaceFolder}/uae/dh0"
+            ],
+            "preLaunchTask": "amigaassembly: build"
+        },
+        {
+            "type": "amiga-assembly",
+            "request": "launch",
+            "name": "FS-UAE Debug",
+            "stopOnEntry": true,
+            "program": "${workspaceFolder}/uae/dh0/main",
+            "remoteProgram": "SYS:main",
+            "emulatorType": "fs-uae",
+            "emulatorArgs": [
+                "--hard_drive_0=${workspaceFolder}/uae/dh0",
+                "--automatic_input_grab=0"
+            ],
+            "preLaunchTask": "amigaassembly: build"
+        }
+    ]
+}
